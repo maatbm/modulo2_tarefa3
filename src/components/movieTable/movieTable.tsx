@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import "./style.css";
 
 async function fetchMovies() {
-  try{
+  try {
     const response = await fetch('/movies.json');
     if (!response.ok) {
       throw new Error("Erro ao carregar filmes" + response.status);
@@ -20,6 +20,7 @@ type Movie = {
   nome: string;
   genero: string;
   imagem: string;
+  isChecked: boolean;
 };
 
 type Props = {
@@ -32,7 +33,7 @@ function RenderMoviesTable(props: Props) {
   useEffect(() => {
     async function loadMovies() {
       const moviesArray = await fetchMovies();
-      setMovies(moviesArray);
+      setMovies(moviesArray.map((movie: Movie) => ({ ...movie, isChecked: false })));
     }
     loadMovies();
   }, []);
@@ -42,6 +43,14 @@ function RenderMoviesTable(props: Props) {
       movie.nome.toLowerCase().includes(props.filterMovie.toLowerCase()) || 
       movie.genero.toLowerCase().includes(props.filterMovie.toLowerCase())
   );
+
+  function check(id: number) {
+    setMovies((prevMovies) =>
+      prevMovies.map((movie) =>
+        movie.id === id ? { ...movie, isChecked: !movie.isChecked } : movie
+      )
+    );
+  }
 
   return (
     <div className="table">
@@ -57,18 +66,21 @@ function RenderMoviesTable(props: Props) {
           <tbody>
             {filteredMovies.map((movie, index) => (
               <tr key={movie.id} className={index % 2 === 0 ? "content" : "content_middle"}>
-                <td>{movie.nome}</td>
+                <td>
+                  <input type="checkbox" className="checkbox" onChange={() => { check(movie.id); alert("Filme selecionado: " + movie.nome); }} checked={movie.isChecked}/>
+                  {movie.nome}
+                </td>
                 <td>{movie.genero}</td>
                 <td><img className="banner" src={movie.imagem} alt={movie.nome} /></td>
               </tr>
             ))}
           </tbody>
         </table>
-      ):(
+      ) : (
         <p>Nenhum filme encontrado</p>
       )}
     </div>
   );
-};
+}
 
 export default RenderMoviesTable;

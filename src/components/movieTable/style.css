@@ -54,4 +54,8 @@ th {
 .rounded-top-right {
     border-top-right-radius: 15px;
 }
-
+.checkbox{
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
